@@ -29,8 +29,8 @@ export class PokemonService {
     
   }
 
-  findAll() {
-    return `This action returns all pokemon`;
+  async findAll(): Promise<Pokemon[]> {
+    return this.pokemonModel.find();
   }
 
   async findOne(term: string) {
@@ -56,21 +56,27 @@ export class PokemonService {
     if ( updatePokemonDto.name )
       updatePokemonDto.name = updatePokemonDto.name.toLowerCase()
     try {
-      /* new: true, sirve para regresar el nuevo objeto si no le ponemos regresa el antiguo*/
+      /* new: true, sirve para regresar el nuevo objeto, si no le ponemos, regresa el antiguo*/
       await pokemon.updateOne( updatePokemonDto, { new: true} )
-      return { ...pokemon.toJSON(), ...updatePokemonDto }
+      let {__v, ...rest } = pokemon.toJSON()
+      return { ...rest, ...updatePokemonDto }
     } catch (err) {
         this.handleExceptions( err )
     }
-    
   }
 
   async remove(id: string) {
     // const pokemon = await this.findOne( id )
-    // await pokemon.deleteOne()
+    // // await pokemon.deleteOne()
     // return { id }
-    const result = this.pokemonModel.findByIdAndDelete( id )
-    return result /* Regresamos el resultado solo para analizar */
+    // const result = await this.pokemonModel.findByIdAndDelete( id )
+    
+    // const result = await this.pokemonModel.deleteOne({ _id: id })
+    const { deletedCount } = await this.pokemonModel.deleteOne({ _id: id })
+    if ( deletedCount === 0 )
+      throw new BadRequestException(`Pokemon with "${ id }" not found`)
+    
+    return /* Regresamos el resultado solo para analizar */
   }
   
   /* Para manejar los errores */
