@@ -4,6 +4,7 @@
 
 /mongo
 .nova
+.env
 # Logs
 logs
 *.log
