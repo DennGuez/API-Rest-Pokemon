@@ -5,6 +5,10 @@
 /mongo
 .nova
 .env
+.env.prod
+
+yarn.lock
+
 # Logs
 logs
 *.log
